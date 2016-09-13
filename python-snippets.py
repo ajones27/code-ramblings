@@ -11,3 +11,9 @@ if not os.path.isfile('filename.csv'):
 # save dataframe in a pickle that's compatible with python 2
 pickle.dump(df , open( "dataframe_pickle.p", "wb" ) , protocol = 2)
 df = pickle.load( open( "dataframe_pickle.p", "rb" ))
+
+# make a deep copy
+import copy
+new_var = copy.deepcopy(old_var)
+# OR
+new_var = old_var.copy(deep=True)
