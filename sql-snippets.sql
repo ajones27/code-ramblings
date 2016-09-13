@@ -8,3 +8,11 @@ SELECT *
 SELECT *
   FROM information_schema.tables 
  WHERE table_name ILIKE '%table%'
+ 
+-- group by week
+  SELECT date_trunc('week', created_at::timestamp)::date as "week", 
+         count(id) as id_count
+    FROM auctions 
+   WHERE created_at is NOT NULL
+GROUP BY week
+ORDER BY week
