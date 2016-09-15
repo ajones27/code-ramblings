@@ -19,6 +19,10 @@ new_var = copy.deepcopy(old_var)
 new_var = old_var.copy(deep=True)
 
 # strip column headings before punctuation (this method will only strip first instance)
-# from table_name-column_name -> column_name
-# use [0] to select first part, and [1] for the '-', not that you would ever want that..
-my_dataframe.columns = [i.rpartition('-')[2] for i in my_dataframe.columns.values]
+# from table_name.column_name -> column_name
+# use [0] to select first part, and [1] for the '.', not that you would ever want that..
+my_dataframe.columns = [i.rpartition('.')[2] for i in my_dataframe.columns.values]
+
+# prepend to column headers
+table_name.columns = ['table_name.{0}'.format(i) for i in table_name.columns.values]
+# from column_name -> table_name.column_name
