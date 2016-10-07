@@ -29,3 +29,22 @@ ORDER BY to_char(t.created_at::DATE,'YYYY/MM'))
          value,
          sum(value) over (order by month) as cumulative_value
     FROM sub_query
+
+-- how to get around not using "distinct on (A, B, C)" as redshift doesn't support it
+with query_for_distinct AS (
+	SELECT  id_number,
+		client_name,
+		company_name,
+		revenue,
+		years_active,
+		is_public
+	FROM table_name
+	WHERE is_public = false)
+SELECT *
+FROM (SELECT *, 
+	     rank() OVER (PARTITION BY id_number, client_name, company_name  
+      ORDER BY id_number, client_name, company_name, revenue) AS three_ranked_values
+      FROM query_for_distinct 
+      ORDER BY client_name, company_name, id_number desc, years_active
+    ) AS ranked
+WHERE ranked.three_ranked = 1
