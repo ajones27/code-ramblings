@@ -48,3 +48,13 @@ FROM (SELECT *,
       ORDER BY client_name, company_name, id_number desc, years_active
     ) AS ranked
 WHERE ranked.three_ranked = 1
+
+-- how to create a column with all days/months/years in a period e.g. 01-01-2010 to one year from now. 
+-- This is useful for using with a left join to other queries so that no days/months are missed out in the final query
+-- replace '1 month'::interval -> '1 day'::interval and 'month' -> 'day' to get daily series
+SELECT date_trunc('month', mm)::date as "month"
+FROM generate_series
+  ( '2010-01-01'::timestamp
+  , (current_date + interval '1 year')::timestamp
+  , '1 month'::interval) mm),
+ 
