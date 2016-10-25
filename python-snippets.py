@@ -69,3 +69,22 @@ df.ix[10,'Column name']
 for i, row in df.iterrows():
     if isinstance(df['String of currency'][i],float) == False:
         df['String of currency'][i] = float(df['String of currency'][i].replace('.','').replace(',','.'))
+
+# replace words using an array of words to replace and an array of words to replace them with
+# to expand the example, let's say we might have random upper/lower case letters and ultimately want Title Case
+df['Name'] = df['Name'].str.lower()
+
+to_replace = ["my old value", "my wrong name"]
+to_replace_with = ["my new value", "my right name"]
+
+import re
+for i in range(len(to_replace)):
+    df['Name'] = df['Name'].apply(lambda x: re.sub(to_replace[i], to_replace_with[i], x))
+
+# if there are null values
+for i, row in df.iterrows():
+    if isinstance(df['Name'][i], float) == False:
+        for k in range(len(to_replace)):
+            df['Name'][i] = re.sub(to_replace[k], to_replace_with[k], df['Name'][i])
+        
+df['Name'] = df['Name'].str.title()
