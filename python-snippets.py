@@ -88,3 +88,8 @@ for i, row in df.iterrows():
             df['Name'][i] = re.sub(to_replace[k], to_replace_with[k], df['Name'][i])
         
 df['Name'] = df['Name'].str.title()
+
+# Debugging with tracer
+from IPython.core.debugger import Tracer
+Tracer()()
+# key words are the same as normal debuggers: continue, next, step, exit
