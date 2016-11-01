@@ -31,8 +31,8 @@ df.columns = ['df.{0}'.format(i) for i in df.columns.values]
 df.replace(to_replace='old value', value='New value', inplace=True)
 
 # strip string from right (end) of string. can replace r with l for replacing at the start
-df['Name'] = df['Name'].map(lambda x: x.rstrip(' - '))
 # e.g. "Anna - " -> "Anna"
+df['Name'] = df['Name'].map(lambda x: x.rstrip(' - '))
 
 # check if value is a particular type (in this case a float). Note: np.nan or "NaN" is a float
 isinstance(value_to_check, float) == True
@@ -90,6 +90,11 @@ for i, row in df.iterrows():
 df['Name'] = df['Name'].str.title()
 
 # Debugging with tracer
+# key words are the same as normal debuggers: continue, next, step, exit
 from IPython.core.debugger import Tracer
 Tracer()()
-# key words are the same as normal debuggers: continue, next, step, exit
+
+# Rolling window, in this case used to calculate the mean of a rolling window of another column in a dataframe
+# mean() can be substituted for other functions e.g. std(), window sets the maximum size, 
+# additionally min_periods can be set to something smaller than the window size otherwise it gives NaN
+df['Ave of value'] = df['Value'].rolling(window=100, min_periods=1).mean()
