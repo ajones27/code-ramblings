@@ -98,3 +98,6 @@ Tracer()()
 # mean() can be substituted for other functions e.g. std(), window sets the maximum size, 
 # additionally min_periods can be set to something smaller than the window size otherwise it gives NaN
 df['Ave of value'] = df['Value'].rolling(window=100, min_periods=1).mean()
+
+# turn index into column e.g. if date is the index and you want a date column and a numerical index instead
+df.reset_index(level=0, inplace=True)
