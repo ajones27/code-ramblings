@@ -31,23 +31,15 @@ ORDER BY to_char(t.created_at::DATE,'YYYY/MM'))
     FROM sub_query
 
 -- how to get around not using "distinct on (A, B, C)" as redshift doesn't support it
-with query_for_distinct AS (
-	SELECT  id_number,
-		client_name,
-		company_name,
-		revenue,
-		years_active,
-		is_public
-	FROM table_name
-	WHERE is_public = false)
-SELECT *
-FROM (SELECT *, 
-	     rank() OVER (PARTITION BY id_number, client_name, company_name  
-      ORDER BY id_number, client_name, company_name, revenue) AS three_ranked_values
-      FROM query_for_distinct 
-      ORDER BY client_name, company_name, id_number desc, years_active
-    ) AS ranked
-WHERE ranked.three_ranked = 1
+SELECT * 
+  FROM
+  (SELECT  created_at, 
+   	   id, 
+           name, 
+   	   -- want to select distinct id and name, but the first created at date
+	   rank() OVER (PARTITION BY id, name ORDER BY created_at asc) AS parent_id_ranked
+   FROM my_table) AS ranked
+  WHERE ranked.parent_id_ranked = 1
 
 -- how to create a column with all days/months/years in a period e.g. 01-01-2010 to one year from now. 
 -- This is useful for using with a left join to other queries so that no days/months are missed out in the final query
