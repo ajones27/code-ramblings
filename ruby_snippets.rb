@@ -13,3 +13,4 @@ my_hash = Hash[keys_array.zip(values_array)]
 string_array = ["My Name", "My age", "My new ADDRESS "]
 symbol_array = string_array.map {|elem| elem.downcase.strip.parameterize.underscore.to_sym}
 # => [:my_name, :my_age, :my_new_address]
+
