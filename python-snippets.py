@@ -101,3 +101,14 @@ df['Ave of value'] = df['Value'].rolling(window=100, min_periods=1).mean()
 
 # turn index into column e.g. if date is the index and you want a date column and a numerical index instead
 df.reset_index(level=0, inplace=True)
+
+# fuzzy matching using difflib.get_close_matches(word, possibilities[, n][, cutoff])
+# Return a list of the best “good enough” matches. 
+# word is a sequence for which close matches are desired (typically a string)
+# possibilities is a list of sequences against which to match word (typically a list of strings).
+# n (default 3; > 0) is the maximum number of close matches to return
+# cutoff (default 0.6) is a float in the range [0, 1]. Possibilities that don’t score at least that similar to word are ignored.
+# The best matches among possibilities are returned in a list, sorted by similarity score, most similar first.
+import difflib
+new_appel_value = difflib.get_close_matches('appel', ['ape', 'apple', 'peach', 'puppy'])
+# => ['apple', 'ape']
