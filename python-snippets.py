@@ -112,3 +112,6 @@ df.reset_index(level=0, inplace=True)
 import difflib
 new_appel_value = difflib.get_close_matches('appel', ['ape', 'apple', 'peach', 'puppy'])
 # => ['apple', 'ape']
+
+# if you have repeated names in a dataframe, but different numerical values, and want to take the sum/mean etc per name
+df = df.groupby(df['Name']).mean().reset_index()
