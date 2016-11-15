@@ -1,6 +1,10 @@
+# Change display options
+np.set_printoptions(threshold='nan')
+pd.set_option('display.max_rows', 1000)
+pd.set_option('display.max_columns', 100)
+
 # write or append dataframe to csv file
 # adapted from here http://stackoverflow.com/questions/30991541/pandas-write-csv-append-vs-write
-
 import os
 if not os.path.isfile('filename.csv'):
         df.to_csv('filename.csv', header=True, encoding='utf-8')
