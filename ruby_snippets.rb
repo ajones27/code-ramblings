@@ -28,3 +28,6 @@ first_row = my_csv.first
 my_csv.map do |row|
   row["New column"] = row["Old column"] - 1
 end
+
+# The only way I know of to do a deep copy
+new_object = Marshal.load( Marshal.dump( old_object ) )
