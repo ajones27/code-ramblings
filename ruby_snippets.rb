@@ -31,3 +31,22 @@ end
 
 # The only way I know of to do a deep copy
 new_object = Marshal.load( Marshal.dump( old_object ) )
+
+# how to turn an array of arrays, where the first row is an array of headers, into a an array of hashes
+# e.g. when you parse an excel sheet
+excel = Roo::Spreadsheet.open(File.join(Rails.root, "file_name.xlsx"))
+my_first_sheet = JSON.parse(excel.sheet(0).to_json)
+
+# get the header
+header = my_first_sheet.shift
+
+my_first_sheet.map! do |ary|
+  hsh = Hash.new
+  ary.each_with_index{|val,index| hsh[header[index]] = val }
+  hsh
+end
+# this modifies my_first_sheet directly
+
+# save an array of arrays to a csv
+require 'csv'
+File.open(File.join(Rails.root, 'app/documents/invente.csv'),'w') { |f| f << invente.map(&:to_csv).join }
