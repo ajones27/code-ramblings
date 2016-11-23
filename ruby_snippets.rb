@@ -40,16 +40,20 @@ my_first_sheet = JSON.parse(excel.sheet(0).to_json)
 # get the header
 header = my_first_sheet.shift
 
-my_first_sheet.map! do |ary|
-  hsh = Hash.new
-  ary.each_with_index{|val,index| hsh[header[index]] = val }
-  hsh
-end
-# this modifies my_first_sheet directly
+# change the header
+my_first_sheet[0] = "Key1, Key2, Key3"
+
+# shift the header if it's not on row 0
+header_line = 4
+my_first_sheet = my_first_sheet[header_line..my_first_sheet.length]
 
 # save an array of arrays to a csv
 require 'csv'
-File.open(File.join(Rails.root, 'app/documents/invente.csv'),'w') { |f| f << invente.map(&:to_csv).join }
+File.open(File.join(Rails.root, 'app/documents/file_name.csv'),'w') { |f| f << hash_name.map(&:to_csv).join }
+
+# read csv file and convert the csv rows to a hash (latin-1/utf-8 encoding)
+my_csv = CSV.read(File.join(Rails.root, "app/documents/file_name.csv"), headers: true, encoding: "iso-8859-1:utf-8")
+my_hash = my_csv.map(&:to_hash)
 
 # Safely merge two hashes (source_hash is the existing hash) with conditions such as 
 # Prefer the old value if it's not missing or "NA"/"Sin Datos"/"#N/A"/etc, and if they're both null then the value should be nil
@@ -96,5 +100,15 @@ existing_array_of_hashes.values
 # Find unique values for a particular key in an array of hashes
 array_of_hashes.map { |h| h['Name'] }.uniq
       
-      
-      
+# Find and replace values using arrays of find and replace values
+def find_and_replace(hash_to_search, field, to_replace_array, to_replace_with_array)
+  find_replace_hash = Hash[to_replace.zip(to_replace_with)]
+  hash_to_search.map do |row|
+    next if row[field].nil?
+    array_words = row[field].split(/\W+/)
+    if (array_words & to_replace).any?
+      find_replace_hash.each { |k, v| row[field][k] &&= v }
+    end
+  end
+end
+
