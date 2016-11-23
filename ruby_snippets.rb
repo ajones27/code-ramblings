@@ -68,9 +68,9 @@ def deep_safe_merge(source_hash, new_hash)
   end
 end
    
-# can use it to merge arrays of hashes on a particular key, in this case "Name"
+# can use it to merge arrays of hashes on a particular key, in this case "Name" (note: inject and reduce are the same)
 def join_new_hsh(initial_array_of_hashes, new_array_of_hashes, on_field = 'Name')
-  new_array_of_hashes.inject(initial_array_of_hashes) do |results, new_info|
+  new_array_of_hashes.reduce(initial_array_of_hashes) do |results, new_info|
     key = new_info[on_field]
     results[key] ||= {}
     results[key] = deep_safe_merge(results[key],new_info)
@@ -79,3 +79,12 @@ def join_new_hsh(initial_array_of_hashes, new_array_of_hashes, on_field = 'Name'
 end
 
 existing_hash = join_new_hsh(existing_array_of_hashes, array_of_hashes_to_merge)
+
+# NOTE: each_with_object is preferred over reduce, but you have to swap the order of results/new_info and you don't have to return the object
+def join_new_hsh(initial_array_of_hashes, new_array_of_hashes, on_field = 'Name')
+  new_array_of_hashes.each_with_object(initial_array_of_hashes) do |new_info, results|
+    key = new_info[on_field]
+    results[key] ||= {}
+    results[key] = deep_safe_merge(results[key],new_info)
+  end
+end
