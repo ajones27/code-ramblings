@@ -115,3 +115,8 @@ end
 # select all rows where key matches value
 new_array_name = hash_or_csv.select { |row| row["Name"] == "anna" }
       
+# for an array of words, ruby prefers %w(). Inside this, we don't need commas or quotes 
+# e.g. instead of ["red", "green", "blue", "yellow"]
+%w(red green blue yellow)
+      
+      
