@@ -93,7 +93,8 @@ end
 # The result of this method will be a hash of hashes where "Name" is the key. To flatten this we can simply do
 existing_array_of_hashes.values
       
-
+# Find unique values for a particular key in an array of hashes
+array_of_hashes.map { |h| h['Name'] }.uniq
       
       
       
