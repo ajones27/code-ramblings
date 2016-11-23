@@ -112,3 +112,6 @@ def find_and_replace(hash_to_search, field, to_replace_array, to_replace_with_ar
   end
 end
 
+# select all rows where key matches value
+new_array_name = hash_or_csv.select { |row| row["Name"] == "anna" }
+      
