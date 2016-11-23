@@ -79,7 +79,7 @@ def join_new_hsh(initial_array_of_hashes, new_array_of_hashes, on_field = 'Name'
   end
 end
 
-existing_hash = join_new_hsh(existing_array_of_hashes, array_of_hashes_to_merge)
+existing_array_of_hashes = join_new_hsh(existing_array_of_hashes, array_of_hashes_to_merge)
 
 # NOTE: each_with_object is preferred over reduce, but you have to swap the order of results/new_info and you don't have to return the object
 def join_new_hsh(initial_array_of_hashes, new_array_of_hashes, on_field = 'Name')
@@ -89,3 +89,11 @@ def join_new_hsh(initial_array_of_hashes, new_array_of_hashes, on_field = 'Name'
     results[key] = deep_safe_merge(results[key],new_info)
   end
 end
+      
+# The result of this method will be a hash of hashes where "Name" is the key. To flatten this we can simply do
+existing_array_of_hashes.values
+      
+
+      
+      
+      
