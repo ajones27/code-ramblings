@@ -54,10 +54,11 @@ File.open(File.join(Rails.root, 'app/documents/invente.csv'),'w') { |f| f << inv
 # Safely merge two hashes (source_hash is the existing hash) with conditions such as 
 # Prefer the old value if it's not missing or "NA"/"Sin Datos"/"#N/A"/etc, and if they're both null then the value should be nil
 # Works even if there are missing or extra keys in each hash
+# Note: casecmp("sindatos") is the same as downcase == 'sindatos'
 def deep_safe_merge(source_hash, new_hash)
   source_hash.merge(new_hash) do |_, old, new|
-    new_null = (new.nil? || new.to_s.gsub(/[^0-9A-Za-z]/, '') == 'NA' || new.to_s.gsub(/[^0-9A-Za-z]/, '').downcase == 'sindatos')
-    old_null = (old.nil? || old.to_s.gsub(/[^0-9A-Za-z]/, '') == 'NA' || old.to_s.gsub(/[^0-9A-Za-z]/, '').downcase == 'sindatos')
+    new_null = (new.nil? || new.to_s.gsub(/[^0-9A-Za-z]/, '') == 'NA' || new.to_s.gsub(/[^0-9A-Za-z]/, '').casecmp("sindatos"))
+    old_null = (old.nil? || old.to_s.gsub(/[^0-9A-Za-z]/, '') == 'NA' || old.to_s.gsub(/[^0-9A-Za-z]/, '').casecmp("sindatos"))
     # if the new value is nil, NA or sindatos, then we check the old value
     case [new_null, old_null]
     when [true, true] then nil
