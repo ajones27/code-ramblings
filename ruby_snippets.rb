@@ -119,4 +119,12 @@ new_array_name = hash_or_csv.select { |row| row["Name"] == "anna" }
 # e.g. instead of ["red", "green", "blue", "yellow"]
 %w(red green blue yellow)
       
-      
+# create csv from array of hashes with different keys
+headers = array_of_hashes.map(&:keys).flatten.uniq
+rows = array_of_hashes.map { |h| h.values_at(*headers) }
+File.open(File.join(Rails.root, "name_of_file.csv"), "w") do |csv|
+  csv << headers.to_csv
+  rows.each do |row|
+    csv << row.to_csv
+  end
+end
