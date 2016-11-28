@@ -128,3 +128,22 @@ File.open(File.join(Rails.root, "name_of_file.csv"), "w") do |csv|
     csv << row.to_csv
   end
 end
+
+# replace binary characters in a string before converting to utf (if there are some errors in force encoding)
+def replace_binary_chars(value_to_replace)
+  keys = [0xf3, 0xf1, 0xfa, 0xed, 0xe9, 0xe1, 0xda, 0xd3, 0xd1, 0xcd, 0xc9, 0xc1, 0xc3, 0xe3,
+          0xc0, 0xc8, 0xcc, 0xd2, 0xd9, 0xe0, 0xe8, 0xec, 0xf2, 0xf9]
+  values = %w(ó ñ ú í é á Ú Ó Ñ Í É Á Ã ã
+              À È Ì Ò Ù à è ì ò ù)
+  to_replace_hash = Hash[keys.zip(values)]
+  value_to_replace = value_to_replace&.force_encoding("BINARY")
+  to_replace_hash.each do |k, v|
+    value_to_replace = value_to_replace&.gsub(k.chr, v.chr)
+    break if value_to_replace.encoding.name == "UTF-8"
+  end
+  value_to_replace&.encode("utf-8")&.mb_chars&.downcase&.to_s
+end
+
+if not value&.dup&.force_encoding("utf-8")&.valid_encoding?
+  replace_binary_chars(value)
+end
