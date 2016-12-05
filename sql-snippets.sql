@@ -48,5 +48,5 @@ SELECT date_trunc('month', mm)::date as "month"
 FROM generate_series
   ( '2010-01-01'::timestamp
   , (current_date + interval '1 year')::timestamp
-  , '1 month'::interval) mm),
+  , '1 month'::interval) mm
  
