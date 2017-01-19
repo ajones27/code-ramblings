@@ -158,3 +158,29 @@ mapping = {
 mappings.each do |k ,v|
   Debtor.find_by(name: k).update_attributes! name: v
 end
+
+# Investor portfolio report
+require 'timecop'
+# Suppresses the output
+ActiveRecord::Base.logger.level = 1;
+# The report we want, as seen on the investor portfolio page
+report = []
+Timecop.freeze('2017-01-01 07-01-02'.to_time) do
+  i = Investor.find(570)
+  ip = Investors::InvestorPresenter.new(i)
+  auctions = i.auctions.map { |a| Investors::Portfolio::AuctionDetailsPresenter.new(a) }
+  report = auctions.map do |a|
+    b = BidPresenter.new(a.decorated.bids.find_by(investor_id: i.id))
+    [ a.transaction_number,
+    a.debtor.name.gsub(",", ""),
+    (a.debtor.public_entity? ? "Public" : "Private"),
+    b.decorated.amount/100.0,
+    a.format_days(a.payment_terms_length),
+    a.expected_aer,
+    ip.net_return_of(a)[1..-1],
+    (a.debtor_paid_at? ? a.debtor_paid_at : a.expected_paid_at).gsub(",", ""),
+    a.auction.rating,
+    a.status,
+  ]
+  end
+end;
