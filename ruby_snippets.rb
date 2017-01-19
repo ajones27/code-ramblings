@@ -147,3 +147,14 @@ end
 if not value&.dup&.force_encoding("utf-8")&.valid_encoding?
   replace_binary_chars(value)
 end
+
+# update entries based on a mapping
+mapping = {
+    "Comunidad Autónoma De Canarias" => "Gobierno de Canarias",
+    "Comunidad Autónoma De Castilla Y León" => "Junta de Castilla y león",
+    "Comunidad Autónoma De Cataluña" => "Generalitat de Cataluña",
+    "Comunidad Autónoma De Madrid" => "Comunidad de Madrid",
+}
+mappings.each do |k ,v|
+  Debtor.find_by(name: k).update_attributes! name: v
+end
