@@ -164,6 +164,7 @@ require 'timecop'
 # Suppresses the output
 ActiveRecord::Base.logger.level = 1;
 # The report we want, as seen on the investor portfolio page
+# investors/portfolio/invoices_table_component.rb
 report = []
 Timecop.freeze('2017-01-01 07-01-02'.to_time) do
   i = Investor.find(570)
