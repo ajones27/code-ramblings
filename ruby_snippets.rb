@@ -185,3 +185,19 @@ Timecop.freeze('2017-01-01 07-01-02'.to_time) do
   ]
   end
 end;
+
+# Run a command with a specific timeout, e.g. getting a prompt from a user within 5 seconds
+Timeout.timeout(5) do
+  STDIN.gets
+end
+
+# Ask user if they want to continue with the command e.g in a specific environment during a rake task
+continue_phrase = "yes please"
+if Rails.env.development? or Rails.env.test?
+  puts "If you want continue, type '#{continue_phrase}'"
+  line = STDIN.gets.chomp
+  if line != continue_phrase
+    puts "Message received. I don't blame you. Exiting..."
+    exit 1
+  end
+end
