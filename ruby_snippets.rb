@@ -201,3 +201,13 @@ if Rails.env.development? or Rails.env.test?
     exit 1
   end
 end
+
+
+# Investor report for balances
+# /app/decorators/investors/calculations/balances.rb
+report = []
+Timecop.freeze('2017-01-01 07-01-02'.to_time) do
+  i = Investor.find(498)    
+  ip = Investors::InvestorPresenter.new(i)    
+  report = [ip.total_balance, ip.balance, ip.deposits_minus_cash, ip.invested_balance, ip.available_balance, ip.reserved_balance]    
+end    
