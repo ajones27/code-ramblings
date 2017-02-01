@@ -160,31 +160,56 @@ mappings.each do |k ,v|
 end
 
 # Investor portfolio report
-require 'timecop'
+require "timecop"
 # Suppresses the output
-ActiveRecord::Base.logger.level = 1;
+ActiveRecord::Base.logger.level = 1
 # The report we want, as seen on the investor portfolio page
 # investors/portfolio/invoices_table_component.rb
 report = []
-Timecop.freeze('2017-01-01 07-01-02'.to_time) do
+# If we use a specific database backup
+Timecop.freeze("2017-02-01 07-00-00".to_time) do
   i = Investor.find(570)
+  # 570 for AGC
   ip = Investors::InvestorPresenter.new(i)
   auctions = i.auctions.map { |a| Investors::Portfolio::AuctionDetailsPresenter.new(a) }
   report = auctions.map do |a|
+    next unless a.has_been_sold
+    ap = AuctionPresenter.new(a.decorated)
     b = BidPresenter.new(a.decorated.bids.find_by(investor_id: i.id))
-    [ a.transaction_number,
-    a.debtor.name.gsub(",", ""),
-    (a.debtor.public_entity? ? "Public" : "Private"),
-    b.decorated.amount/100.0,
-    a.format_days(a.payment_terms_length),
-    a.expected_aer,
-    ip.net_return_of(a)[1..-1],
-    (a.debtor_paid_at? ? a.debtor_paid_at : a.expected_paid_at).gsub(",", ""),
-    a.auction.rating,
-    a.status,
-  ]
+    status = if ap.debtor_paid_at.present?
+               "Settled"
+             elsif Time.current.to_date < ap.invoice.expected_paid_at
+               "Due"
+             elsif Time.current.to_date >= ap.invoice.expected_paid_at &&
+                   (Time.current.to_date - ap.invoice.expected_paid_at).to_i <= ap.grace_period.to_i
+               "In Grace Period"
+             else
+               "Overdue"
+             end
+    the_date = ap.debtor_paid_at.present? ? ap.debtor_paid_at : ap.invoice.expected_paid_at
+    [
+      ap.transaction_number,
+      ap.debtor.name.delete(","),
+      (ap.debtor.public_entity? ? "Public" : "Private"),
+      b.decorated.amount / 100.0,
+      ap.format_days(ap.payment_terms_length).delete(" days"),
+      ap.expected_aer,
+      ip.net_return_of(a)[1..-1],
+      the_date&.to_date&.strftime("%d/%m/%Y"),
+      ap.auction.rating,
+      status,
+    ]
   end
-end;
+end
+
+# Investor report for balances
+# /app/decorators/investors/calculations/balances.rb
+report = []
+Timecop.freeze('2017-02-01 07-01-02'.to_time) do
+  i = Investor.find(570)    
+  ip = Investors::InvestorPresenter.new(i)    
+  report = [ip.total_balance, ip.balance, ip.deposits_minus_cash, ip.invested_balance, ip.available_balance, ip.reserved_balance]    
+end    
 
 # Run a command with a specific timeout, e.g. getting a prompt from a user within 5 seconds
 Timeout.timeout(5) do
@@ -200,14 +225,4 @@ if Rails.env.development? or Rails.env.test?
     puts "Message received. I don't blame you. Exiting..."
     exit 1
   end
-end
-
-
-# Investor report for balances
-# /app/decorators/investors/calculations/balances.rb
-report = []
-Timecop.freeze('2017-01-01 07-01-02'.to_time) do
-  i = Investor.find(498)    
-  ip = Investors::InvestorPresenter.new(i)    
-  report = [ip.total_balance, ip.balance, ip.deposits_minus_cash, ip.invested_balance, ip.available_balance, ip.reserved_balance]    
-end    
+end  
