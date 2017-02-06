@@ -226,3 +226,89 @@ if Rails.env.development? or Rails.env.test?
     exit 1
   end
 end  
+
+# Investor flow e.g. BG
+# /app/controllers/operations/accounts_controller.rb
+def show
+  @account = the_investor.accounts.find params[:id]
+  title =  view_context.link_to the_investor.name, investor_path(the_investor)
+  title += " - "
+  title += view_context.link_to "Accounts", investor_accounts_path(the_investor)
+  title += " - "
+  title += @account.category.titleize
+  @page_header = PageHeaderComponent.new(view_context, title.html_safe, params)
+  @component = ::Tables::GenericTableComponent.new(view_context)
+  @component.headers = ["Balance", "Debit", "Credit", "Description", "Date Recorded",
+                        "Transaction Number", "Public Entity", "Bid Amount", "Return",
+                        "Expected Return", "Advanced At", "Debtor Paid At", "Expected Paid At",
+                        "Rating"]
+  balance = 0
+  end_balance = @account.balance
+  start_date = "14-06-2015"
+  end_date = "01-01-2017"
+  @component.rows = @account.accounting_entries.where("created_at::date > to_date('#{start_date}','DD-MM-YYYY') and created_at::date <  to_date('#{end_date}','DD-MM-YYYY')").order(:created_at => :asc).collect do |entry|
+    is_credit = false
+    if [ 'asset', 'expenses' ].include? @account.account_type
+      is_credit = true if entry.amount > 0
+      balance += entry.amount.abs if not is_credit
+      balance -= entry.amount.abs if is_credit
+    else
+      is_credit = true if entry.amount > 0
+      balance += entry.amount.abs if is_credit
+      balance -= entry.amount.abs if not is_credit
+    end
+
+    presenter = ::Investors::InvestorPresenter.new(the_investor)
+    row = []
+    row.push(presenter.format_money(balance))
+    credit_debit =
+      if is_credit
+        ["", presenter.format_money(entry.amount.abs)]
+      else
+        [presenter.format_money(entry.amount.abs), ""]
+      end
+    row.push(credit_debit)
+    # row.push(entry.accounting_transaction.try(:description) || "Missing transaction")
+    if entry.accounting_transaction.try(:description).present?
+      desc = entry.accounting_transaction.description
+      description, transaction_number =
+        if desc.include?("Investor Deposit")
+          ["Investor Deposit", ""]
+        else
+          desc.split(" - ")
+        end
+    else
+      description = "No description"
+      transaction_number = nil
+    end
+    row.push(description)
+    row.push(entry.created_at.to_date.strftime("%d/%m/%Y"))
+    if transaction_number.present? and transaction_number.include?("IG-")
+      row.push(transaction_number)
+      a = Auction.find_by(transaction_number: transaction_number)
+      b = a.bids.find_by(investor_id: the_investor.id)
+      if a.has_been_sold? and b.present?
+        i = Invoice.find_by(auction_id: a.id)
+        row.push(a.debtor.public_entity)
+        row.push(b.amount / 100.0)
+        if a.debtor_paid_at.nil?
+          row.push(b.return_net / 100.0)
+          row.push("")
+        else
+          row.push("")
+          (b.total_payback - b.amount) / 100.0
+        end
+        row.push(a.advanced_at.to_date.strftime("%d/%m/%Y"))
+        row.push(i.expected_paid_at.to_date.strftime("%d/%m/%Y"))
+        row.push(a.debtor_paid_at&.to_date&.strftime("%d/%m/%Y"))
+        row.push(a.rating)
+      else
+        row.push(["N/A (bid cancelled)", "", "", "", "", ""])
+      end
+    else
+      row.push(["", "", "", "", "", "", ""])
+    end
+    row.flatten
+  end
+  render :template => "layouts/page"
+end
