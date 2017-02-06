@@ -229,6 +229,8 @@ end
 
 # Investor flow e.g. BG
 # /app/controllers/operations/accounts_controller.rb
+# http://nco-eur.lvh.me:3000/investors/498/accounts
+# investor cash account
 def show
   @account = the_investor.accounts.find params[:id]
   title =  view_context.link_to the_investor.name, investor_path(the_investor)
