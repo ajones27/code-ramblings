@@ -314,3 +314,19 @@ def show
   end
   render :template => "layouts/page"
 end
+
+# New DataSources/Profiles
+ds = DataSource.find_by(novicap_id: 'ESB50632850')
+ds.blob
+ds.current_assets_by_year
+ds.fetch
+prof = Profile.new('ESB50632850')
+prof.add(:current_assets_by_year)
+prof.provide
+prof.data_sources
+prof.current_assets_by_year
+prof.report.get(:current_assets_by_year)
+oney = Analyses::SmeRiskOneYear.new(novicap_id: 'ESB50632850')
+oney.perform
+oney.sme
+oney.outputs
