@@ -316,6 +316,7 @@ def show
 end
 
 # New DataSources/Profiles
+# e.g. #{dev_server}/analyses/sme_risk_one_year?novicap_id=ESB1234
 ds = DataSource.where(novicap_id: 'ESB50632850')
 ds = ds.first # there will usually be at least 2 - one manual and one from the real data source
 ds.blob
