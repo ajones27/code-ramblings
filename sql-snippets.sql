@@ -50,3 +50,14 @@ FROM generate_series
   , (current_date + interval '1 year')::timestamp
   , '1 month'::interval) mm
  
+-- show table/graph for specific values 
+SELECT  column1 as "year", 
+	column2 as "amount" 
+FROM (
+	VALUES  (2009, 3300495.79), 
+		(2010, 2894192.76), 
+		(2011, 3195881.66), 
+		(2012, 2682215.17), 
+		(2013, 2163819.42), 
+		(2014, 2567560.77)
+     ) as vals
