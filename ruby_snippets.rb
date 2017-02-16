@@ -332,3 +332,42 @@ oney = Analyses::SmeRiskOneYear.new(novicap_id: 'ESB50632850')
 oney.perform
 oney.sme
 oney.outputs
+
+# Given a new invoice with a new company/debtor, in risk-2, public debtor,
+# we want to simulate how much of that invoice we could finance given the currently available funds of the investors
+# and we want to know why
+invs_bal = []; Account.where("category = 'investor_cash_account' and balance > 0").each do |a|
+ invs_bal << [a.general_ledger.investor.id, a.balance/100.0]
+end
+
+strategies = []
+reasons = []
+invs_bal.each do |i, bal|
+  strat = []
+  i_strat = Investor.find(i).strategy
+  strat << i_strat.maximum_invoice_exposure
+  strat << i_strat.maximum_company_exposure
+  strat << i_strat.maximum_debtor_exposure
+  strat << i_strat.maximum_public_administration_exposure
+  strat << i_strat.grade_2
+  strategies << bal * (strat.min / 100.0)
+  this_reason = [i]
+  if i_strat.maximum_invoice_exposure == strat.min
+    this_reason << 'invoice'
+  end
+  if i_strat.maximum_company_exposure == strat.min
+    this_reason << 'company'
+  end
+  if i_strat.maximum_debtor_exposure == strat.min
+    this_reason << 'debtor'
+  end
+  if i_strat.maximum_public_administration_exposure == strat.min
+    this_reason << 'public'
+  end
+  if i_strat.grade_2== strat.min
+    this_reason << 'risk'
+  end
+  reasons << this_reason
+end
+strategies.sum # => 60,000.00
+
