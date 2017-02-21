@@ -340,9 +340,84 @@ invs_bal = []; Account.where("category = 'investor_cash_account' and balance > 0
  invs_bal << [a.general_ledger.investor.id, a.balance/100.0]
 end
 
+tots = []
+invs_bal.each do |i, bal|
+  inv = Investor.find(i)
+  od = inv.auctions.overdue.where(rating: "RISK-5").count
+  d = inv.auctions.due.where(rating: "RISK-5").count
+  ad = inv.auctions.advanced.where(rating: "RISK-5").count
+  bd = inv.auctions.bidding.where(rating: "RISK-5").count
+  cfd = inv.auctions.confirmed.where(rating: "RISK-5").count
+  total = od + d + ad + bd + cfd
+  if total > 0 and inv.strategy.grade_5 < 100
+    invested = 0
+   inv.auctions.overdue.where(rating: "RISK-5").each do |a|
+      invested += a.bids.find_by(investor_id: i).amount
+    end
+   inv.auctions.due.where(rating: "RISK-5").each do |a|
+      invested += a.bids.find_by(investor_id: i).amount
+    end
+   inv.auctions.advanced.where(rating: "RISK-5").each do |a|
+      invested += a.bids.find_by(investor_id: i).amount
+    end
+   inv.auctions.bidding.where(rating: "RISK-5").each do |a|
+      invested += a.bids.find_by(investor_id: i).amount
+    end
+   inv.auctions.confirmed.where(rating: "RISK-5").each do |a|
+      invested += a.bids.find_by(investor_id: i).amount
+    end
+    if invested > (inv.strategy.grade_5  / 100.0 ) * bal
+      tots << i
+    end
+  end
+end
+
+invs_bal.each do |i, bal|
+  inv = Investor.find(i)
+  od = inv.auctions.overdue.map(&:debtor).map(&:public_entity).count(true)
+  d = inv.auctions.due.map(&:debtor).map(&:public_entity).count(true)
+  ad = inv.auctions.advanced.map(&:debtor).map(&:public_entity).count(true)
+  bd = inv.auctions.bidding.map(&:debtor).map(&:public_entity).count(true)
+  cfd = inv.auctions.confirmed.map(&:debtor).map(&:public_entity).count(true)
+  total = od + d + ad + bd + cfd
+  if total > 0 and inv.strategy.maximum_public_administration_exposure < 100
+    invested = 0
+    inv.auctions.due.each do |a|
+      if a.debtor.public_entity
+        invested += a.bids.find_by(investor_id: i).amount
+      end
+    end
+    inv.auctions.advanced.each do |a|
+      if a.debtor.public_entity
+        invested += a.bids.find_by(investor_id: i).amount
+      end
+    end
+    inv.auctions.bidding.each do |a|
+      if a.debtor.public_entity
+        invested += a.bids.find_by(investor_id: i).amount
+      end
+    end
+    inv.auctions.confirmed.each do |a|
+      if a.debtor.public_entity
+        invested += a.bids.find_by(investor_id: i).amount
+      end
+    end
+    inv.auctions.overdue.each do |a|
+      if a.debtor.public_entity
+        invested += a.bids.find_by(investor_id: i).amount
+      end
+    end
+
+    if invested > (inv.strategy.maximum_public_administration_exposure  / 100.0 ) * bal
+      tots << i
+    end
+  end
+end
+
 strategies = []
 reasons = []
 invs_bal.each do |i, bal|
+  next if tots.include? i
   strat = []
   i_strat = Investor.find(i).strategy
   strat << i_strat.maximum_invoice_exposure
