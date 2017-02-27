@@ -317,7 +317,7 @@ end
 
 # New DataSources/Profiles
 # e.g. #{dev_server}/analyses/sme_risk_one_year?novicap_id=ESB1234
-ds = DataSource.where(novicap_id: 'ESB50632850')
+ds = DataSource.where(novicap_id: 'ESB1234')
 ds = ds.first # there will usually be at least 2 - one manual and one from the real data source
 ds.blob
 ds.current_assets_by_year
@@ -328,10 +328,17 @@ prof.provide
 prof.data_sources
 prof.current_assets_by_year
 prof.report.get(:current_assets_by_year)
-oney = Analyses::SmeRiskOneYear.new(novicap_id: 'ESB50632850')
-oney.perform
-oney.sme
-oney.outputs
+# view/do an analysis. parameters in analyses/relationship.rb
+# operations -> analyses
+# operations -> relationships -> choose one -> view analysis
+#{dev_server}/analyses/relationship?sme_novicap_id=ESA123&debtor_novicap_id=ESB456&payment_method=bank_transfer
+ds = DataSource::Insightview.new(novicap_id: 'ESB1234')
+ds.fetch
+ds.class.supported_facts
+# we've added insightview_modelo200_shared_datasource_stuff 
+# because modelo200 and insightview are similar but neither is a member of the other
+# using "ActiveSupport::Concern" instead of inheritance
+
 
 # Given a new invoice with a new company/debtor, in risk-2, public debtor,
 # we want to simulate how much of that invoice we could finance given the currently available funds of the investors
