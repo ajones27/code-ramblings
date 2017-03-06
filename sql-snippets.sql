@@ -64,6 +64,8 @@ FROM (
 
 
 -- starting to learn how to query jsonb
+-- https://www.postgresql.org/docs/current/static/functions-json.html#FUNCTIONS-JSON-OP-TABLE
+-- http://stackoverflow.com/questions/22736742/query-for-array-elements-inside-json-type
 SELECT  blob -> 'assets' -> 1 -> 'year', 
 	blob -> 'assets' -> 1 -> 'staff' 
 FROM data_sources
