@@ -61,3 +61,21 @@ FROM (
 		(2013, 2163819.42), 
 		(2014, 2567560.77)
      ) as vals
+
+
+-- starting to learn how to query jsonb
+SELECT  blob -> 'assets' -> 1 -> 'year', 
+	blob -> 'assets' -> 1 -> 'staff' 
+FROM data_sources
+WHERE novicap_id = 'ESB86675410'
+AND blob ->> 'found' = 'true'
+AND blob ->'assets' @> '[{"year":"2014"}]';
+
+with ass AS (
+	SELECT blob -> 'assets' as blob 
+	FROM data_sources 
+	WHERE novicap_id = 'ESB86675410')
+SELECT  blob -> 0 -> 'year' as year, 
+	blob -> 0 -> 'staff' as staff
+FROM ass;
+
