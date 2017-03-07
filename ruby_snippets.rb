@@ -431,3 +431,6 @@ strategies.sum # => 60,000.00
 # If you're struggling to hit a real web page in a test because of VCR issues and Webmock real http connections not being allowed, run these
 VCR.turn_off!
 WebMock.allow_net_connect!
+
+# check syntax of specific file
+ruby -c file_path/file.rb
