@@ -434,3 +434,19 @@ WebMock.allow_net_connect!
 
 # check syntax of specific file
 ruby -c file_path/file.rb
+
+# Dig out all the keys in a nested hash of arrays, hashes, arrays of hashes etc
+# text is either a hash or an array
+def iterate(text, str)
+  text.each do |k,v|
+  # If v is nil, an array is being iterated and the value is k. 
+  # If v is not nil, a hash is being iterated and the value is v.
+  value = v || k
+  if value.is_a?(Hash) || value.is_a?(Array)
+    iterate(value, str)
+  else
+    str << value + "\n"
+  end
+end
+str
+      end
