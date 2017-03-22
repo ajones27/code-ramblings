@@ -449,4 +449,26 @@ def iterate(text, str)
   end
 end
 str
-      end
+end
+
+# amend the investor AER to take into account a lower return e.g. for the invoices where we did a manual correction with withdrawals
+auct = Auction.find_by(transaction_number: "ABCDEFG")
+a = Investors::Portfolio::AuctionDetailsPresenter.new(auct)
+ap = AuctionPresenter.new(a.decorated)
+
+
+old_investors_return_total_net = 87.54
+correction = 38.29
+corrected_investors_return_total_net = old_investors_return_total_net - correction
+
+investors_advanced_amount = 4138.02
+
+actual_invested_days = ap.actual_invested_days.gsub(/\D/,'')
+
+investment_period = (actual_invested_days).to_i
+
+rotations_per_year = (360.0 / investment_period)
+
+effective_operation_cost = investors_return_total_net.to_f / investors_advanced_amount
+
+investor_aer =  ((effective_operation_cost + 1) ** rotations_per_year) - 1
