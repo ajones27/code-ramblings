@@ -472,3 +472,5 @@ rotations_per_year = (360.0 / investment_period)
 effective_operation_cost = investors_return_total_net.to_f / investors_advanced_amount
 
 investor_aer =  ((effective_operation_cost + 1) ** rotations_per_year) - 1
+
+# NOTE: to list active investors, i.e. ones that are trading, use investor.strategy == "active". This relates to "Settings = 'ON'" in the platform
