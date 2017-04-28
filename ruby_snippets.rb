@@ -474,3 +474,9 @@ effective_operation_cost = investors_return_total_net.to_f / investors_advanced_
 investor_aer =  ((effective_operation_cost + 1) ** rotations_per_year) - 1
 
 # NOTE: to list active investors, i.e. ones that are trading, use investor.strategy == "active". This relates to "Settings = 'ON'" in the platform
+
+# Complex line extension query, joining through company, to get the total volume of non-expired extensions where companies are in TA1
+lines = (Extension.includes(:company).all.
+                   select { |l| l.company.trading_account_id == 1 }.
+                   select { |l| l.is_extension == true }.
+                   select { |l| l.expires_at > Time.current }.map(&:amount).sum / 100.0).round(2)
