@@ -481,19 +481,3 @@ lines = (Extension.includes(:company).all.
                    select { |l| l.is_extension == true }.
                    select { |l| l.expires_at > Time.current }.map(&:amount).sum / 100.0).round(2)
 
-# List of new investors, based on deposits
-select distinct on (e.investor_id, i.name, u.email)
-               to_char(e.created_at::date, 'YYYY/MM') as month,
-               e.investor_id as inv_id,
-               i.name,
-               u.email,
-               u.first_name,
-               u.last_name
-        from explanations e
-          inner join investors i on i.id = e.investor_id
-          INNER JOIN investor_memberships im on im.investor_id = i.id
-          inner join users u on u.id = im.user_id
-        where e.explained_as = 'investor_deposit'
-        and u.admin = false
-          and e.created_at::date <= current_date
-        order by inv_id, i.name, u.email, month asc
