@@ -64,6 +64,15 @@ dev.off()
 # show what packages are saved in your library
 library()
 
+# install packages (once installed, they can be updated)
+install.packages()
+install.packages("gclus")
+update.packages()
 
+# list packages installed
+installed.packages()
+
+# load packages
+library(gclus)
 
 
