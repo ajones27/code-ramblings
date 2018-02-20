@@ -26,3 +26,4 @@ mymatrix[,2] # select second column
 mymatrix[1,2] # select element in 1st row, 2nd column
 mymatrix[1,c(1,2)] # select first row, 1st and 2nd element
 
+# By default, matrices are filled by column
