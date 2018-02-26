@@ -27,3 +27,10 @@ mymatrix[1,2] # select element in 1st row, 2nd column
 mymatrix[1,c(1,2)] # select first row, 1st and 2nd element
 
 # By default, matrices are filled by column
+# They can only contain one data type
+
+# Arrays are like matrices but can have more than 2 dimensions
+myarray <- array(vector, dimensions, dimnames)
+
+dim1 <- c("A1", "A2")
+dim2 <- c("B1", "B2", "B3")
