@@ -120,3 +120,55 @@ dim(Auto)
 
 # preview the first 4 rows
 Auto[1:4,]
+
+# remove rows containing NAs
+Auto=na.omit(Auto)
+dim(Auto)
+
+# check variable names
+names(Auto)
+
+# plot the data
+plot(Auto$cylinders, Auto$mpg)
+
+# by 'attaching' the dataframe, we don't have to reference the variables with $
+attach(Auto)
+plot(cylinders, mpg)
+
+# the variable cylinders is numeric, but since there are only a few possible values, 
+# we can treat it as qualitative instead. for this, we convert the values to factors
+cylinders=as.factor(cylinders)
+
+# If the variable plotted on the x-axis is categorial, 
+# then boxplots will automatically be produced by the plot() function
+plot(cylinders, mpg, col="red", varwidth=T, xlab="cylinders", ylab="mpg")
+
+# we can plot a histogram instead
+hist(mpg, col="red", breaks=15)
+
+# we can create a scatterplot with all pairs from the dataframe
+pairs(Auto)
+
+# or we can just use a subset (these are the variables to be included)
+pairs(~ mpg + displacement + horsepower, Auto)
+
+# we can use identify to annotate a graph with extra information
+plot(horsepower, mpg)
+# e.g. we provide the x and y labels from the plot and the variable we want to annotate
+identify(horsepower,mpg,name)
+# then we click on the points on the graph and click the finish button when done to see the names appear
+
+# we can also print out a summary of each variable in the whole dataframe
+summary(Auto)
+
+# or a summary by variable
+summary(mpg)
+summary(name)
+
+# when you're done with the R session, you can choose to save all your variables
+# you can reload these next time with
+load(".RData")
+
+# similarly, you can save a history of commands and load it back in
+savehistory()
+loadhistory()
